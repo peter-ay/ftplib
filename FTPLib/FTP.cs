@@ -13,53 +13,6 @@ namespace FTPLib
 {
     public class FTP
     {
-        private string ftpServerIP = "";
-
-        public string FtpServerIP
-        {
-            get { return ftpServerIP; }
-            set { ftpServerIP = value; }
-        }
-
-        private string ftpUserID = "";
-
-        public string FtpUserID
-        {
-            get { return ftpUserID; }
-            set { ftpUserID = value; }
-        }
-
-        private string ftpPassword = "";
-
-        public string FtpPassword
-        {
-            get { return ftpPassword; }
-            set { ftpPassword = value; }
-        }
-        //private static string ftpIP = "116.62.116.36:9024/";
-        //private static string ftpIP_Order = ftpIP + "order";
-        //private static string ftpRootURL = "ftp://" + "116.62.116.36:9024/";
-        //private static string ftpRootURL_Order = ftpRootURL + "order/";
-        //private static string ftpRootURL_Confirm = ftpRootURL + "confirm/";
-        //private static string ftpRootURL_Shipping = ftpRootURL + "shipping/";
-        //private static string ftpUserID = "hko";
-        //private static string ftpUserPW = "Qwer1234";
-        //D:\Peter\SourceCode\Jinsftp\Files
-        //D:\Program\FTP\Files
-        //private static string saveFilePath = System.Environment.CurrentDirectory + @"\xmlfiles";
-        //private static int i = 0;
-
-        //public static void GetFile()
-        //{
-        //    string[] fileList = FTPGetFileList(ftpIP_Order, ftpUserID, ftpUserPW);
-        //    while (null != fileList)
-        //    {
-        //        FTPDownloadFile(ftpIP_Order, ftpUserID, ftpUserPW, saveFilePath, fileList[0], fileList[0]);
-        //        FTPFileDelete(ftpRootURL_Order, fileList[0], ftpUserID, ftpUserPW);
-        //        fileList = FTPGetFileList(ftpIP_Order, ftpUserID, ftpUserPW);
-        //    }
-        //}
-
         #region FTP获取文件列表
 
         /// <summary>
@@ -120,9 +73,9 @@ namespace FTPLib
                 //返回结果
                 return result.ToString().Split('\n');
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine(ex.Message);
+                //Console.WriteLine(ex.Message);
                 return (null);
             }
             finally
@@ -142,7 +95,6 @@ namespace FTPLib
         #endregion
 
         #region FTP下载文件
-        //C:\Peter\SourceCode\TEST\Temp
         /// <summary>
         /// FTP下载文件
         /// </summary>
@@ -163,17 +115,16 @@ namespace FTPLib
 
             //存储流
             FileStream saveStream = null;
-            FileStream saveStream1 = null;
             //FTP数据流
             Stream ftpStream = null;
-            string ftpUrl = "ftp://" + ftpServerIP + "/" + ftpServerFolder + "/";
+            string ftpUrl = "ftp://" + ftpServerIP + "/" + ftpServerFolder + "/" + downloadFileName;
             try
             {
                 //生成下载文件
                 saveStream = new FileStream(saveFilePath + "\\" + saveFileName, FileMode.Create);
-                saveStream1 = new FileStream(saveFilePath + "1" + "\\" + saveFileName, FileMode.Create);
+
                 //生成FTP请求对象
-                ftpRequest = (FtpWebRequest)FtpWebRequest.Create(new Uri("ftp://" + ftpUrl + downloadFileName));
+                ftpRequest = (FtpWebRequest)FtpWebRequest.Create(new Uri(ftpUrl));
 
                 //设置下载文件方法
                 ftpRequest.Method = WebRequestMethods.Ftp.DownloadFile;
@@ -205,14 +156,13 @@ namespace FTPLib
                 while (readCount > 0)
                 {
                     saveStream.Write(buffer, 0, readCount);
-                    saveStream1.Write(buffer, 0, readCount);
                     readCount = ftpStream.Read(buffer, 0, bufferSize);
                 }
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                throw ex;
             }
             finally
             {
@@ -224,11 +174,6 @@ namespace FTPLib
                 if (saveStream != null)
                 {
                     saveStream.Close();
-                }
-
-                if (saveStream1 != null)
-                {
-                    saveStream1.Close();
                 }
 
                 if (ftpResponse != null)
@@ -289,7 +234,6 @@ namespace FTPLib
 
 
         #endregion
-
 
     }
 }
