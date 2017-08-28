@@ -241,7 +241,7 @@ namespace FTPLib
         #endregion
 
         #region FTP删除文件
-        public static bool DeleteFile(string ftpServerIP, string ftpServerFolder, string ftpFileName, string ftpUser, string ftpPassword)
+        public bool DeleteFile(string ftpServerIP, string ftpServerFolder, string ftpFileName, string ftpUser, string ftpPassword)
         {
             bool success = false;
             FtpWebRequest ftpWebRequest = null;
