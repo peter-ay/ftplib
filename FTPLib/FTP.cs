@@ -244,7 +244,7 @@ namespace FTPLib
         /// <param name="ftpUserID">FTP登录帐号</param>
         /// <param name="ftpPassword">FTP登录密码</param>
         /// <param name="filename">上文件文件名（绝对路径）</param>
-        private void UploadFile(string ftpServerIP, string ftpServerFolder, string ftpFileName, string ftpUserID, string ftpPassword)
+        public void UploadFile(string ftpServerIP, string ftpServerFolder, string uploadFullPathFileName, string ftpUserID, string ftpPassword)
         {
             //上传文件
             FileInfo uploadFile = null;
@@ -261,9 +261,9 @@ namespace FTPLib
             try
             {
                 //获取上传文件
-                uploadFile = new FileInfo(ftpFileName);
+                uploadFile = new FileInfo(uploadFullPathFileName);
 
-                string uri = "ftp://" + ftpServerIP + "/" + ftpServerFolder + "/" + ftpFileName;
+                string uri = "ftp://" + ftpServerIP + "/" + ftpServerFolder + "/" + uploadFile.Name;
                 //创建FtpWebRequest对象 
                 //ftpRequest = (FtpWebRequest)FtpWebRequest.Create(new Uri("ftp://" + ftpServerIP + "/" + uploadFile.Name));
                 ftpRequest = (FtpWebRequest)FtpWebRequest.Create(new Uri(uri));
