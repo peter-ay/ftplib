@@ -235,5 +235,97 @@ namespace FTPLib
 
         #endregion
 
+        #region FTP上传文件
+
+        /// <summary>
+        /// FTP上传文件
+        /// </summary>
+        /// <param name="ftpServerIP">FTP服务器IP</param>
+        /// <param name="ftpUserID">FTP登录帐号</param>
+        /// <param name="ftpPassword">FTP登录密码</param>
+        /// <param name="filename">上文件文件名（绝对路径）</param>
+        private void UploadFile(string ftpServerIP, string ftpServerFolder, string ftpFileName, string ftpUserID, string ftpPassword)
+        {
+            //上传文件
+            FileInfo uploadFile = null;
+
+            //上传文件流
+            FileStream uploadFileStream = null;
+
+            //FTP请求对象
+            FtpWebRequest ftpRequest = null;
+
+            //FTP流
+            Stream ftpStream = null;
+
+            try
+            {
+                //获取上传文件
+                uploadFile = new FileInfo(ftpFileName);
+
+                string uri = "ftp://" + ftpServerIP + "/" + ftpServerFolder + "/" + ftpFileName;
+                //创建FtpWebRequest对象 
+                //ftpRequest = (FtpWebRequest)FtpWebRequest.Create(new Uri("ftp://" + ftpServerIP + "/" + uploadFile.Name));
+                ftpRequest = (FtpWebRequest)FtpWebRequest.Create(new Uri(uri));
+                //FTP登录
+                ftpRequest.Credentials = new NetworkCredential(ftpUserID, ftpPassword);
+
+                // 默认为true，连接不会被关闭 
+                // 在一个命令之后被执行 
+                ftpRequest.KeepAlive = false;
+
+                //FTP请求执行方法
+                ftpRequest.Method = WebRequestMethods.Ftp.UploadFile;
+
+                // 指定数据传输类型 
+                ftpRequest.UseBinary = true;
+
+                // 上传文件时通知服务器文件的大小 
+                ftpRequest.ContentLength = uploadFile.Length;
+
+                // 缓冲大小设置为2kb 
+                int buffLength = 2048;
+
+                byte[] buff = new byte[buffLength];
+                int contentLen;
+
+                // 打开一个文件流读上传的文件 
+                uploadFileStream = uploadFile.OpenRead();
+
+                // 把上传的文件写入流 
+                ftpStream = ftpRequest.GetRequestStream();
+
+                // 每次读文件流的2kb 
+                contentLen = uploadFileStream.Read(buff, 0, buffLength);
+
+                // 流内容没有结束 
+                while (contentLen != 0)
+                {
+                    // 把内容从file stream 写入 upload stream 
+                    ftpStream.Write(buff, 0, contentLen);
+
+                    contentLen = uploadFileStream.Read(buff, 0, buffLength);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                if (uploadFileStream != null)
+                {
+                    uploadFileStream.Close();
+                }
+
+                if (ftpStream != null)
+                {
+                    ftpStream.Close();
+                }
+            }
+        }
+
+        #endregion
     }
 }
