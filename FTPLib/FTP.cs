@@ -327,5 +327,58 @@ namespace FTPLib
         }
 
         #endregion
+
+        /// <summary>
+        /// 文件存在检查
+        /// </summary>
+        /// <param name="ftpPath"></param>
+        /// <param name="ftpName"></param>
+        /// <returns></returns>
+        public bool CheckExist(string ftpServerIP, string ftpServerFolder, string ftpFileName, string ftpUser, string ftpPassword)
+        {
+            bool success = false;
+            FtpWebRequest ftpWebRequest = null;
+            WebResponse webResponse = null;
+            StreamReader reader = null;
+            try
+            {
+                string url = "ftp://" + ftpServerIP + "/" + ftpServerFolder;
+
+                ftpWebRequest = (FtpWebRequest)FtpWebRequest.Create(new Uri(url));
+                ftpWebRequest.Credentials = new NetworkCredential(ftpUser, ftpPassword);
+                ftpWebRequest.Method = WebRequestMethods.Ftp.ListDirectory;
+                ftpWebRequest.KeepAlive = false;
+                webResponse = ftpWebRequest.GetResponse();
+                reader = new StreamReader(webResponse.GetResponseStream());
+                string line = reader.ReadLine();
+                while (line != null)
+                {
+                    if (line == ftpFileName)
+                    {
+                        success = true;
+                        break;
+                    }
+                    line = reader.ReadLine();
+                }
+            }
+            catch (Exception)
+            {
+                success = false;
+            }
+            finally
+            {
+                if (reader != null)
+                {
+                    reader.Close();
+                }
+                if (webResponse != null)
+                {
+                    webResponse.Close();
+                }
+            }
+            return success;
+        }
+
+
     }
 }
